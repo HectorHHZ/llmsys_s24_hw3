@@ -51,8 +51,8 @@ class MultiHeadAttention(Module):
         """
         return a 1x1xTxt triangular causal mask for Q @ K^T (which will get broadcasted to BxHxTxT)
         """
-        mask = -np.finfo(datatype).max * np.triu(np.ones((1, 1, seq_len, seq_len), dtype=datatype), 1) # This should be ok, but may be problematic
-        # mask = -np.finfo(datatype).max * np.triu(np.ones((bs, nh, seq_len, seq_len), dtype=datatype), 1) 
+        # mask = -np.finfo(datatype).max * np.triu(np.ones((1, 1, seq_len, seq_len), dtype=datatype), 1) # This should be ok, but may be problematic -> the loss will be NaN in Assignment 3 because the mask will not broadcast correctly in the kernel.
+        mask = -np.finfo(datatype).max * np.triu(np.ones((bs, nh, seq_len, seq_len), dtype=datatype), 1) # Correct version for Assignment 3.
         return tensor_from_numpy(mask, backend=self.backend)
 
     def project_to_query_key_value(self, x):
